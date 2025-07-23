@@ -46,7 +46,7 @@ app.post('/shopify-webhook', async (req, res) => {
       params: params
     }, {
       headers: {
-        'api-key': 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,
+        'api-key': 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,
         'Content-Type': 'application/json'
       }
     });
