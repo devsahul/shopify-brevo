@@ -5,19 +5,26 @@ const axios = require('axios');
 const app = express();
 app.use(bodyParser.json());
 
-const BREVO_API_KEY = process.env.BREVO_API_KEY; 
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
 const TEMPLATE_ID = 3;
 
 app.post('/shopify-webhook', async (req, res) => {
   try {
     const order = req.body;
 
+    // Build shippingName in comma format
+    const shippingFirst = order.shipping_address?.first_name || '';
+    const shippingLast = order.shipping_address?.last_name || '';
+    const company = order.shipping_address?.company || '';
+    const shippingName = [shippingFirst, shippingLast, company].filter(Boolean).join(', ');
+
+    // Prepare all dynamic fields for Brevo
     const params = {
       firstName: order.customer?.first_name || '',
       orderName: order.name || '',
       email: order.email || '',
-      shippingName: `${order.shipping_address?.first_name || ''} ${order.shipping_address?.last_name || ''}`,
-      company: order.shipping_address?.company || '',
+      shippingName: shippingName,
+      company: company,
       address1: order.shipping_address?.address1 || '',
       address2: order.shipping_address?.address2 || '',
       city: order.shipping_address?.city || '',
