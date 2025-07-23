@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const axios = require('axios');
+
 const app = express();
 app.use(bodyParser.json());
 
-const BREVO_API_KEY = 'd71ca1e4aa2975e1fd60e1020704c2e001dd227bf16813eeb9f2c99ecbbc2ccd-R600W1u62yQ7d1LU'; // Replace with your real API key
-const TEMPLATE_ID = 3; // Your actual Brevo template ID
+const BREVO_API_KEY = process.env.BREVO_API_KEY; 
+const TEMPLATE_ID = 3;
 
 app.post('/shopify-webhook', async (req, res) => {
   try {
@@ -26,25 +27,31 @@ app.post('/shopify-webhook', async (req, res) => {
       phone: order.shipping_address?.phone || ''
     };
 
-    await axios.post('https://api.brevo.com/v3/smtp/email', {
-      sender: { name: 'Catalyst Verification', email: 'verify@orders.catalystcase.com' },
+    console.log('📦 Sending email with params:', params);
+
+    const response = await axios.post('https://api.brevo.com/v3/smtp/email', {
+      sender: {
+        name: 'Catalyst Verification',
+        email: 'verify@orders.catalystcase.com'
+      },
       to: [{ email: order.email }],
       templateId: TEMPLATE_ID,
       params: params
     }, {
       headers: {
-        'api-key': d71ca1e4aa2975e1fd60e1020704c2e001dd227bf16813eeb9f2c99ecbbc2ccd-R600W1u62yQ7d1LU,
+        'api-key': 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,
         'Content-Type': 'application/json'
       }
     });
 
-    res.status(200).send('Email sent successfully via Brevo');
+    console.log('✅ Brevo response:', response.data);
+    res.status(200).send('✅ Email sent successfully via Brevo');
   } catch (err) {
     console.error('❌ Email sending failed:', err?.response?.data || err.message);
-    res.status(500).send('Error sending email');
+    res.status(500).send('❌ Error sending email');
   }
 });
 
 app.listen(3000, () => {
-  console.log('🚀 Listening for Shopify webhooks on port 3000');
+  console.log('🚀 Shopify-Brevo Webhook running on port 3000');
 });
