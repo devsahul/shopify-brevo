@@ -45,10 +45,12 @@ app.post('/shopify-webhook', async (req, res) => {
       templateId: TEMPLATE_ID,
       params: params
     }, {
-      headers: {
-        'api-key': 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,
-        'Content-Type': 'application/json'
-      }
+
+     headers: {
+        'api-key': BREVO_API_KEY,
+         'Content-Type': 'application/json'
+}
+
     });
 
     console.log('✅ Brevo response:', response.data);
